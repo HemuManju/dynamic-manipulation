@@ -26,51 +26,57 @@ def motion_model(tf):
 
     # Append dependent variables
     dependent_variables = {
-        'bu': (0, 0.5),
-        'hd': (w_min, w_max),
-        'hu': (0, None),
+        'bv': (-0.5, 0.5),
+        'hd': (None, None),
+        'hv': (None, None),
     }
     for key, value in dependent_variables.items():
         m.add_component(key, pyo.Var(m.time, bounds=value))
 
     # Append derivatives
     derivative = {
-        'bu': 'dbudt',
+        'bv': 'dbvdt',
         'hd': 'dhddt',
-        'hu': 'dhudt',
+        'hv': 'dhvdt',
     }
     for var in m.component_objects(pyo.Var, active=True):
         m.add_component(derivative[str(var)],
                         pyod.DerivativeVar(var, wrt=m.time))
 
     # Append control variables
-    control_inputs = {'ba': (None, None), 'md': (None, None)}
+    control_inputs = {'ba': (-1, 1), 'md': (0.03, 0.07)}
     for key, value in control_inputs.items():
         m.add_component(key, pyo.Var(m.time, bounds=value))
 
     # Append differential equations as constraints
     m.ode_bu = pyo.Constraint(m.time,
-                              rule=lambda m, time: m.dbudt[time] == m.ba[time])
-    m.ode_hd = pyo.Constraint(
-        m.time, rule=lambda molde, time: m.dhddt[time] == m.hu[time])
+                              rule=lambda m, time: m.dbvdt[time] == m.ba[time])
+    m.ode_hd = pyo.Constraint(m.time,
+                              rule=lambda m, time: m.dhddt[time] == m.hv[time])
 
     # A special constraint
     def hammer_acceleration(m, t):
         c1, c2 = 28.41, 206.35
-        temp = m.ba[t] / h_mass + 2 * c1 * pyo.exp(
-            -c2 * (m.md[t] - w_min)) * pyo.sinh(c2 *
-                                                (m.hd[t] - w_min)) / h_mass
-        return m.dhudt[t] == temp
+        temp = m.ba[t] * h_mass - 2 * c1 * pyo.exp(
+            -c2 * (m.md[t] - w_min)) * pyo.sinh(c2 * (m.hd[t]))
+        return m.dhvdt[t] == temp / h_mass
 
     m.ode_hu = pyo.Constraint(m.time, rule=hammer_acceleration)
 
+    m.disp_1 = pyo.Constraint(
+        m.time, rule=lambda m, time: m.hd[time] <= (m.md[time] - w_min))
+
+    m.disp_2 = pyo.Constraint(
+        m.time, rule=lambda m, time: m.hd[time] >= -(m.md[time] - w_min))
+
     # Add final and initial values
     m.ic = pyo.ConstraintList()
-    intial_condition = {'bu': 0, 'hd': 0, 'hu': 0, 'ba': 0, 'md': 0.03}
+    intial_condition = {'bv': 0, 'hd': 0, 'hv': 0, 'ba': 0, 'md': 0.03}
     for i, var in enumerate(m.component_objects(pyo.Var, active=True)):
         m.ic.add(var[0] == intial_condition[str(var)])
 
     # Objective function
-    m.obj = pyo.Objective(expr=m.hu[m.time.last()], sense=pyo.maximize)
+    m.obj = pyo.Objective(expr=m.hv[m.time.last()] + m.bv[m.time.last()],
+                          sense=pyo.maximize)
 
     return m
