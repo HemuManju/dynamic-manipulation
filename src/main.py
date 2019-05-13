@@ -1,4 +1,5 @@
 import yaml
+import pyomo.environ as pyo
 import numpy as np
 from models import car_maneuver, hammering
 from models import optimize
@@ -12,13 +13,28 @@ with skip_run_code('skip', 'car_maneuver_model') as check, check():
     tf = 50.0
     m = car_maneuver.motion_model(tf)
 
+with skip_run_code('skip', 'hammer_model_binary_search') as check, check():
+    tf_min = 1.0
+    tf_max = 5.0
+    while (tf_max - tf_min) >= 10e-2:
+        m = hammering.motion_model(tf_max)
+        m, optimal_values, solution = optimize.run_optimization(m, 500)
+        if solution.solver.termination_condition == pyo.TerminationCondition.optimal:
+            tf_max = (tf_min + tf_max) / 2
+        elif solution.solver.termination_condition == pyo.TerminationCondition.infeasible:
+            tf_min = (tf_min + tf_max) / 2
+    print(tf_max)
+
 with skip_run_code('run', 'hammering_model') as check, check():
-    tf = 2.0
+    tf = 1.0625
     m = hammering.motion_model(tf)
 
 with skip_run_code('run', 'optimize_model') as check, check():
-    m, optimal_values = optimize.run_optimization(m, 200)
+    m, optimal_values, solution = optimize.run_optimization(m, 500)
 
     sb.set()
-    optimal_values.plot(x='time', y=['bv', 'hd', 'hv', 'md'], subplots=True)
+    print(m.obj())
+    optimal_values.plot(x='time',
+                        y=['bv', 'hd', 'hv', 'md', 'ba'],
+                        subplots=True)
     plt.show()
