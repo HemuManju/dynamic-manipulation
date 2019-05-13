@@ -13,7 +13,7 @@ with skip_run_code('skip', 'car_maneuver_model') as check, check():
     m = car_maneuver.motion_model(tf)
 
 with skip_run_code('run', 'hammering_model') as check, check():
-    tf = 2.0
+    tf = 6.0
     m = hammering.motion_model(tf)
 
 with skip_run_code('run', 'optimize_model') as check, check():

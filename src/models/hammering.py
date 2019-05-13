@@ -26,7 +26,7 @@ def motion_model(tf):
 
     # Append dependent variables
     dependent_variables = {
-        'bu': (-0.5, 0.5),
+        'bu': (0, 0.5),
         'hd': (w_min, w_max),
         'hu': (0, None),
     }
@@ -57,15 +57,16 @@ def motion_model(tf):
     # A special constraint
     def hammer_acceleration(m, t):
         c1, c2 = 28.41, 206.35
-        temp = m.ba[t] - 2 * c1 * pyo.exp(-c2 * (m.md[t] - w_min)) * pyo.sinh(
-            c2 * (m.hd[t] - w_min))
-        return temp == m.dhudt[t]
+        temp = m.ba[t] / h_mass + 2 * c1 * pyo.exp(
+            -c2 * (m.md[t] - w_min)) * pyo.sinh(c2 *
+                                                (m.hd[t] - w_min)) / h_mass
+        return m.dhudt[t] == temp
 
     m.ode_hu = pyo.Constraint(m.time, rule=hammer_acceleration)
 
     # Add final and initial values
     m.ic = pyo.ConstraintList()
-    intial_condition = {'bu': 0, 'hd': 0, 'hu': 0, 'ba': 0, 'md': 0}
+    intial_condition = {'bu': 0, 'hd': 0, 'hu': 0, 'ba': 0, 'md': 0.03}
     for i, var in enumerate(m.component_objects(pyo.Var, active=True)):
         m.ic.add(var[0] == intial_condition[str(var)])
 
