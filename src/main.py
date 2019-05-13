@@ -13,12 +13,12 @@ with skip_run_code('skip', 'car_maneuver_model') as check, check():
     m = car_maneuver.motion_model(tf)
 
 with skip_run_code('run', 'hammering_model') as check, check():
-    tf = 6.0
+    tf = 2.0
     m = hammering.motion_model(tf)
 
 with skip_run_code('run', 'optimize_model') as check, check():
     m, optimal_values = optimize.run_optimization(m, 200)
 
     sb.set()
-    optimal_values.plot(x='time', y=['bu', 'hd', 'hu'])
+    optimal_values.plot(x='time', y=['bv', 'hd', 'hv', 'md'], subplots=True)
     plt.show()
