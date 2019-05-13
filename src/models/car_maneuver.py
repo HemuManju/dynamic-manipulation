@@ -29,7 +29,7 @@ def motion_model(tf):
         'p': (-0.5, 0.5)
     }
     for key, value in dependent_variables.items():
-        m.add_component(key, pyo.Var(m.time, initialize=0.25, bounds=value))
+        m.add_component(key, pyo.Var(m.time, bounds=value))
 
     # Append derivatives
     derivative = {
@@ -46,7 +46,7 @@ def motion_model(tf):
     # Append control variables
     control_inputs = {'a': (None, None), 'v': (-0.1, 0.1)}
     for key, value in control_inputs.items():
-        m.add_component(key, pyo.Var(m.time, initialize=1.0, bounds=value))
+        m.add_component(key, pyo.Var(m.time, bounds=value))
 
     # Append differential equations as constraints
     L = 2
@@ -66,15 +66,14 @@ def motion_model(tf):
 
     # Add final and initial values
     m.ic = pyo.ConstraintList()
-    for var in m.component_objects(pyo.Var, active=True):
-        m.ic.add(var[0] == 0)
+    intial_condition = {'x': 0, 'y': 0, 't': 0, 'u': 0, 'p': 0, 'a': 0, 'v': 0}
+    for i, var in enumerate(m.component_objects(pyo.Var, active=True)):
+        m.ic.add(var[0] == intial_condition[str(var)])
 
     m.fc = pyo.ConstraintList()
-    for var in m.component_objects(pyo.Var, active=True):
-        if str(var) == 'y':
-            m.fc.add(var[tf] == 20)
-        else:
-            m.fc.add(var[tf] == 0)
+    final_condition = {'x': 0, 'y': 20, 't': 0, 'u': 0, 'p': 0, 'a': 0, 'v': 0}
+    for i, var in enumerate(m.component_objects(pyo.Var, active=True)):
+        m.fc.add(var[tf] == final_condition[str(var)])
 
     # Objective function
     m.integral = pyod.Integral(
