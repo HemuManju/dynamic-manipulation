@@ -9,11 +9,11 @@ from utils import *
 
 # config = yaml.load(open('config.yml'))
 
-with skip_run_code('skip', 'car_maneuver_model') as check, check():
+with skip_run('skip', 'car_maneuver_model') as check, check():
     tf = 50.0
     m = car_maneuver.motion_model(tf)
 
-with skip_run_code('skip', 'hammer_model_binary_search') as check, check():
+with skip_run('skip', 'hammer_model_binary_search') as check, check():
     tf_min = 1.0
     tf_max = 5.0
     while (tf_max - tf_min) >= 10e-2:
@@ -25,11 +25,11 @@ with skip_run_code('skip', 'hammer_model_binary_search') as check, check():
             tf_min = (tf_min + tf_max) / 2
     print(tf_max)
 
-with skip_run_code('run', 'hammering_model') as check, check():
-    tf = 1.0625
+with skip_run('run', 'hammering_model') as check, check():
+    tf = 2.0
     m = hammering.motion_model(tf)
 
-with skip_run_code('run', 'optimize_model') as check, check():
+with skip_run('run', 'optimize_model') as check, check():
     m, optimal_values, solution = optimize.run_optimization(m, 500)
 
     sb.set()

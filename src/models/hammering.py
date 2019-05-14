@@ -44,7 +44,7 @@ def motion_model(tf):
                         pyod.DerivativeVar(var, wrt=m.time))
 
     # Append control variables
-    control_inputs = {'ba': (-1, 1), 'md': (0.03, 0.07)}
+    control_inputs = {'ba': (-4, 4), 'md': (w_min, w_max)}
     for key, value in control_inputs.items():
         m.add_component(key, pyo.Var(m.time, bounds=value))
 
@@ -71,7 +71,7 @@ def motion_model(tf):
 
     # Add final and initial values
     m.ic = pyo.ConstraintList()
-    intial_condition = {'bv': 0, 'hd': 0, 'hv': 0, 'ba': 0, 'md': 0.03}
+    intial_condition = {'bv': 0, 'hd': 0, 'hv': 0, 'ba': 0, 'md': 0.07}
     for i, var in enumerate(m.component_objects(pyo.Var, active=True)):
         m.ic.add(var[0] == intial_condition[str(var)])
 
