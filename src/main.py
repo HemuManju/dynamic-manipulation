@@ -13,20 +13,34 @@ with skip_run('skip', 'car_maneuver_model') as check, check():
     tf = 50.0
     m = car_maneuver.motion_model(tf)
 
-with skip_run('skip', 'hammer_model_binary_search') as check, check():
-    tf_min = 1.0
-    tf_max = 5.0
-    while (tf_max - tf_min) >= 10e-2:
+with skip_run('run', 'hammer_model_binary_search') as check, check():
+    tf_min = 0.0
+    tf_max = 3.0
+    v = [0]
+    t = []
+    while (tf_max - tf_min) >= 10e-3:
         m = hammering.motion_model(tf_max)
         m, optimal_values, solution = optimize.run_optimization(m, 500)
+        temp = optimal_values['hv'].values
+        v.append(temp[-1])
+        t.append(tf_max)
+
         if solution.solver.termination_condition == pyo.TerminationCondition.optimal:
-            tf_max = (tf_min + tf_max) / 2
+            if (v[-1] - v[-2]) <= 0:
+                tf_max = (tf_min + tf_max) / 2
+            else:
+                tf_min = (tf_min + tf_max) / 2
         elif solution.solver.termination_condition == pyo.TerminationCondition.infeasible:
             tf_min = (tf_min + tf_max) / 2
+
+    plt.plot(v)
+    plt.show()
+    print(v)
+    print(t)
     print(tf_max)
 
 with skip_run('run', 'hammering_model') as check, check():
-    tf = 2.0
+    tf = tf_max  # 2.00390625
     m = hammering.motion_model(tf)
 
 with skip_run('run', 'optimize_model') as check, check():
@@ -35,6 +49,6 @@ with skip_run('run', 'optimize_model') as check, check():
     sb.set()
     print(m.obj())
     optimal_values.plot(x='time',
-                        y=['bv', 'hd', 'hv', 'md', 'ba'],
+                        y=['ba', 'bv', 'bd', 'hd', 'hv', 'md'],
                         subplots=True)
     plt.show()
