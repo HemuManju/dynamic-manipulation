@@ -13,7 +13,7 @@ with skip_run('skip', 'car_maneuver_model') as check, check():
     tf = 50.0
     m = car_maneuver.motion_model(tf)
 
-with skip_run('run', 'hammer_model_binary_search') as check, check():
+with skip_run('skip', 'hammer_model_binary_search') as check, check():
     tf_min = 0.0
     tf_max = 3.0
     v = [0]
@@ -40,7 +40,7 @@ with skip_run('run', 'hammer_model_binary_search') as check, check():
     print(tf_max)
 
 with skip_run('run', 'hammering_model') as check, check():
-    tf = tf_max  # 2.00390625
+    tf = 2.00390625  # tf_max (optimal)
     m = hammering.motion_model(tf)
 
 with skip_run('run', 'optimize_model') as check, check():

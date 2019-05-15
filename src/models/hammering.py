@@ -66,8 +66,8 @@ def motion_model(tf):
     # A special constraint
     def hammer_acceleration(m, t):
         c1, c2 = 28.41, 206.35
-        temp = -m.ba[t] * h_mass + 2 * c1 * pyo.exp(
-            -c2 * (m.md[t] - w_min)) * pyo.sinh(c2 * (m.hd[t])) + 1 * m.hv[t]
+        temp = -m.ba[t] * h_mass - 2 * c1 * pyo.exp(
+            -c2 * (m.md[t] - w_min)) * pyo.sinh(c2 * (m.hd[t])) - 1 * m.hv[t]
         return m.dhvdt[t] == temp / h_mass
 
     m.ode_hv = pyo.Constraint(m.time, rule=hammer_acceleration)
@@ -85,9 +85,9 @@ def motion_model(tf):
     intial_condition = {
         'bd': 0.0,
         'bv': 0.0,
+        'ba': 0.0,
         'hd': 0.0,
         'hv': 0.0,
-        'ba': 0.0,
         'md': 0.07
     }
     for i, var in enumerate(m.component_objects(pyo.Var, active=True)):
