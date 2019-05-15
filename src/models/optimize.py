@@ -24,7 +24,7 @@ def run_optimization(model, n_time_steps):
     m = model
     # Transform and solve
     pyo.TransformationFactory('dae.finite_difference').apply_to(
-        m, nfe=n_time_steps, wrt=m.time, scheme='BACKWARD')
+        m, nfe=n_time_steps, wrt=m.time, scheme='FORWARD')
     opt = pyo.SolverFactory('ipopt')
     solution = opt.solve(m)
     solution.write()
