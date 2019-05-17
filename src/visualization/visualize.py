@@ -21,10 +21,11 @@ def plot_optimal_trajectories(config):
 
     read_path = Path(__file__).parents[2] / config['save_path']
     fname = [str(f) for f in read_path.iterdir() if f.suffix == '.pkl']
-    fname.sort(reverse=False)
+    fname.sort()
     trajectories = ['time', 'bd', 'bv', 'ba', 'hd', 'hv', 'md', 'mv']
     aggregate_df = pd.DataFrame(columns=trajectories)
     for i, item in enumerate(fname):
+        print(item)
         data = read_model_log(item)
         temp = data['optimal_values'][trajectories].copy()
         temp['stiffness'] = config['stiffness'][i]

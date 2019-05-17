@@ -51,7 +51,7 @@ def figure_asthetics(ax):
     ax : matplotlib ax object
 
     """
-    matplotlib.rcParams['font.family'] = "Arial"
+    # matplotlib.rcParams['font.family'] = "Arial"
     ax.set_axisbelow(True)
     ax.grid(True)
     ax.spines['right'].set_visible(False)

@@ -40,7 +40,7 @@ with skip_run('skip', 'hammer_model_binary_search') as check, check():
     print(t)
     print(tf_max)
 
-with skip_run('skip', 'hammer_model_optimize') as check, check():
+with skip_run('run', 'hammer_model_optimize') as check, check():
     tf = 2.00390625  # tf_max (optimal)
     for item in config['stiffness']:
         output = {}
