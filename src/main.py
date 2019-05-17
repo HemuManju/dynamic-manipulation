@@ -1,13 +1,14 @@
 import yaml
 import pyomo.environ as pyo
 import numpy as np
-from models import car_maneuver, hammering
-from models import optimize
 import seaborn as sb
 import matplotlib.pyplot as plt
+from models import car_maneuver, hammering
+from models import optimize
+from visualization.visualize import plot_optimal_trajectories
 from utils import *
 
-# config = yaml.load(open('config.yml'))
+config = yaml.load(open('config.yml'), Loader=yaml.SafeLoader)
 
 with skip_run('skip', 'car_maneuver_model') as check, check():
     tf = 50.0
@@ -39,16 +40,29 @@ with skip_run('skip', 'hammer_model_binary_search') as check, check():
     print(t)
     print(tf_max)
 
-with skip_run('run', 'hammering_model') as check, check():
+with skip_run('skip', 'hammer_model_optimize') as check, check():
     tf = 2.00390625  # tf_max (optimal)
-    m = hammering.motion_model(tf)
+    for item in config['stiffness']:
+        output = {}
+        print(item)
+        m = hammering.motion_model(tf, item, config)
+        m, optimal_values, solution = optimize.run_optimization(m, 500)
 
-with skip_run('run', 'optimize_model') as check, check():
-    m, optimal_values, solution = optimize.run_optimization(m, 500)
+        # sb.set()
+        # print(m.obj())
+        # optimal_values.plot(x='time',
+        #                     y=['bd', 'bv', 'ba', 'hd', 'hv', 'md', 'mv'],
+        #                     subplots=True)
+        # plt.show()
+        print(m.obj())
+        # Append model and other information
+        output['obj_values'] = m.obj()
+        output['optimal_values'] = optimal_values
+        output['solver_status'] = solution.solver.termination_condition
+        output['model_name'] = item
 
-    sb.set()
-    print(m.obj())
-    optimal_values.plot(x='time',
-                        y=['ba', 'bv', 'bd', 'hd', 'hv', 'md'],
-                        subplots=True)
-    plt.show()
+        save_path = str(Path(__file__).parents[1] / config['save_path'])
+        save_model_log(output, save_path)
+
+with skip_run('run', 'plot_trajectories') as check, check():
+    plot_optimal_trajectories(config)

@@ -2,13 +2,17 @@ import pyomo.environ as pyo
 import pyomo.dae as pyod
 
 
-def motion_model(tf):
+def motion_model(tf, stiffness, config):
     """Motion model for hammer task from given intial conditions to final conditions.
 
     Parameters
     ----------
     tf : float
         Final time of the maneuvering.
+    stiffness : str
+        Stiffness of springs used for simulation
+    config : yaml
+        The configuration file for the simulation
 
     Returns
     -------
@@ -20,14 +24,19 @@ def motion_model(tf):
     m = pyo.ConcreteModel()
     m.time = pyod.ContinuousSet(bounds=(0, tf))
     # Parameters
-    h_mass = 0.5  # mass of the hammer
-    w_min = 0.03
-    w_max = 0.07
+    h_mass = config['h_mass']  # mass of the hammer
+    if stiffness == 'low_stiffness':
+        w_min, w_max = config['w_max'], config['w_max']
+    elif stiffness == 'high_stiffness':
+        w_min, w_max = config['w_min'], config['w_min']
+    else:
+        w_min, w_max = config['w_min'], config['w_max']
 
+    print(w_min, w_max)
     # Append dependent variables
     dependent_variables = {
-        'bd': (-0.3, 0.3),
-        'bv': (-0.5, 0.5),
+        'bd': (config['bd_min'], config['bd_max']),
+        'bv': (config['bv_min'], config['bv_max']),
         'hd': (None, None),
         'hv': (None, None),
     }
@@ -46,12 +55,16 @@ def motion_model(tf):
                         pyod.DerivativeVar(var, wrt=m.time))
 
     # Append control variables
-    control_inputs = {'ba': (-4, 4), 'md': (w_min, w_max)}
+    control_inputs = {
+        'ba': (config['ba_min'], config['ba_max']),
+        'md': (w_min, w_max)
+    }
     for key, value in control_inputs.items():
         m.add_component(key, pyo.Var(m.time, bounds=value))
 
     # Add constraint on the magnet velocity
-    m.add_component('mv', pyod.DerivativeVar(m.md, wrt=m.time))
+    m.add_component('mv',
+                    pyod.DerivativeVar(m.md, wrt=m.time, bounds=(-0.08, 0.08)))
 
     # Append differential equations as constraints
     m.ode_bd = pyo.Constraint(m.time,
@@ -60,8 +73,6 @@ def motion_model(tf):
                               rule=lambda m, time: m.dbvdt[time] == m.ba[time])
     m.ode_hd = pyo.Constraint(m.time,
                               rule=lambda m, time: m.dhddt[time] == m.hv[time])
-
-    m.ode_md = pyo.Constraint(m.time, rule=lambda m, time: m.mv[time] <= 0.08)
 
     # A special constraint
     def hammer_acceleration(m, t):
@@ -74,7 +85,7 @@ def motion_model(tf):
 
     m.disp_1 = pyo.Constraint(
         m.time,
-        rule=lambda m, time: m.bd[m.time.last()] + m.hd[m.time.last()] == 0.3)
+        rule=lambda m, time: m.bd[m.time.last()] == config['path_length'])
     m.disp_2 = pyo.Constraint(
         m.time, rule=lambda m, time: m.hd[time] <= (m.md[time] - w_min))
     m.disp_3 = pyo.Constraint(
@@ -88,7 +99,7 @@ def motion_model(tf):
         'ba': 0.0,
         'hd': 0.0,
         'hv': 0.0,
-        'md': 0.07
+        'md': 0.07,
     }
     for i, var in enumerate(m.component_objects(pyo.Var, active=True)):
         m.ic.add(var[0] == intial_condition[str(var)])

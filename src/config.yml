@@ -1,3 +1,18 @@
 ##---------------------------------------------------------------------##
 ## Global parameters
 # Dynamic manipulation parameters
+stiffness:   ['low_stiffness', 'high_stiffness', 'variable_stiffness']
+w_min:       0.03
+w_max:       0.07
+h_mass:      0.5
+path_length: 0.3
+bd_min:      -0.5
+bd_max:      0.5
+bv_min:      -0.5
+bv_max:      0.5
+ba_min:      -1.0
+ba_max:      1.0
+
+##---------------------------------------------------------------------##
+## Experiment 0
+save_path:   'models/experiment_0/'
