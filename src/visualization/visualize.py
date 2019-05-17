@@ -38,13 +38,13 @@ def plot_optimal_trajectories(config, save_plot):
     aggregate_df.dropna(how='any', inplace=True)
 
     labels = {
-        'bd': 'base displacement',
-        'bv': 'base velocity',
-        'ba': 'base acceleration',
-        'hd': 'hammer displacement',
-        'hv': 'hammer velocity',
-        'md': 'magnet displacement',
-        'mv': 'magnet velocity'
+        'bd': 'Base displacement',
+        'bv': 'Base velocity',
+        'ba': 'Base acceleration',
+        'hd': 'Hammer displacement',
+        'hv': 'Hammer velocity',
+        'md': 'Magnet displacement',
+        'mv': 'Magnet velocity'
     }
     for key, value in labels.items():
 
@@ -52,25 +52,28 @@ def plot_optimal_trajectories(config, save_plot):
         df_low = aggregate_df[aggregate_df['stiffness'] == 'low_stiffness']
         ax.plot(df_low['time'].values,
                 df_low[key].values,
-                label='low stiffness')
+                label='low stiffness',
+                color='#469B55')
 
         df_high = aggregate_df[aggregate_df['stiffness'] == 'high_stiffness']
         ax.plot(df_high['time'].values,
                 df_high[key].values,
-                label='high stiffness')
+                label='high stiffness',
+                color='#3C5CA0')
 
         df_variable = aggregate_df[aggregate_df['stiffness'] ==
                                    'variable_stiffness']
         ax.plot(df_variable['time'].values,
                 df_variable[key].values,
-                label='variable stiffness')
+                label='variable stiffness',
+                color='#B53941')
         # Asthetics
         figure_asthetics(ax)
         ax.set_xlabel('Time')
         ax.set_ylabel(value)
         plt.legend()
         if save_plot:
-            name = value.replace(" ", "_")
+            name = value.lower().replace(" ", "_")
             path = str(Path(__file__).parents[2] /
                        config['figure_save_path']) + '/' + name + '.pdf'
             plt.savefig(path, bbox_inches='tight')

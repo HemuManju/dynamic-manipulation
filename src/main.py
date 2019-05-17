@@ -64,5 +64,5 @@ with skip_run('skip', 'hammer_model_optimize') as check, check():
         save_path = str(Path(__file__).parents[1] / config['save_path'])
         save_model_log(output, save_path)
 
-with skip_run('run', 'plot_trajectories') as check, check():
+with skip_run('skip', 'plot_trajectories') as check, check():
     plot_optimal_trajectories(config, save_plot=True)

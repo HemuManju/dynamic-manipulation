@@ -53,11 +53,22 @@ def figure_asthetics(ax):
     """
     # matplotlib.rcParams['font.family'] = "Arial"
     ax.set_axisbelow(True)
-    ax.grid(True)
+    # Hide the top and right spines
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
-    ax.yaxis.set_ticks_position('left')
-    ax.xaxis.set_ticks_position('bottom')
+    # Increase the ticks width
+    ax.xaxis.set_tick_params(direction='out', width=1.5)
+    ax.yaxis.set_tick_params(direction='out', width=1.5)
+    # Increase the left and bottom spines width to match with ticks
+    ax.spines['left'].set_linewidth(1.5)
+    ax.spines['bottom'].set_linewidth(1.5)
+    # Increase the x and y ticks
+    xtickslocs = ax.get_xticks().tolist()
+    ax.set_xticks(xtickslocs)
+    ytickslocs = ax.get_yticks().tolist()
+    ax.set_yticks(ytickslocs)
+    # Grid
+    ax.grid(True)
 
     return None
 
