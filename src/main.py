@@ -40,7 +40,7 @@ with skip_run('skip', 'hammer_model_binary_search') as check, check():
     print(t)
     print(tf_max)
 
-with skip_run('run', 'hammer_model_optimize') as check, check():
+with skip_run('skip', 'hammer_model_optimize') as check, check():
     tf = 2.00390625  # tf_max (optimal)
     for item in config['stiffness']:
         output = {}
@@ -65,4 +65,4 @@ with skip_run('run', 'hammer_model_optimize') as check, check():
         save_model_log(output, save_path)
 
 with skip_run('run', 'plot_trajectories') as check, check():
-    plot_optimal_trajectories(config)
+    plot_optimal_trajectories(config, save_plot=True)

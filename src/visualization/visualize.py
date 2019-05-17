@@ -5,13 +5,15 @@ import numpy as np
 from .utils import *
 
 
-def plot_optimal_trajectories(config):
+def plot_optimal_trajectories(config, save_plot):
     """Plots the optimal trajectories obtained from optimization
 
     Parameters
     ----------
     config : yaml
         The yaml configuration rate.
+    save_plot : boolean
+        To save the plot or not
 
     Returns
     -------
@@ -67,6 +69,11 @@ def plot_optimal_trajectories(config):
         ax.set_xlabel('Time')
         ax.set_ylabel(value)
         plt.legend()
+        if save_plot:
+            name = value.replace(" ", "_")
+            path = str(Path(__file__).parents[2] /
+                       config['figure_save_path']) + '/' + name + '.pdf'
+            plt.savefig(path, bbox_inches='tight')
         plt.show()
 
     return None
