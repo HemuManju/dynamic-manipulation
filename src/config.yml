@@ -1,24 +1,36 @@
 ##---------------------------------------------------------------------##
 ## Global parameters
 # Dynamic manipulation parameters
-stiffness:   ['high_stiffness', 'low_stiffness', 'variable_stiffness']
-w_min:       +0.03
-w_max:       +0.07
-h_mass:      +0.5
+stiffness: ['high_stiffness', 'low_stiffness', 'variable_stiffness']
+w_min: +0.03
+w_max: +0.06
+h_mass: +0.2
 path_length: +0.3
-bd_min:      -0.3
-bd_max:      +0.3
-bv_min:      -0.5
-bv_max:      +0.5
-ba_min:      -2.0
-ba_max:      +2.0
-
+bd_min: -0.3
+bd_max: +0.3
+bv_min: -0.5
+bv_max: +0.5
+ba_min: -4.0
+ba_max: +4.0
 ##---------------------------------------------------------------------##
 ## Experiment 0
 # paths
-save_path:   'models/experiment_0/'
-figure_save_path: 'reports/figures/'
-
+# save_path: 'models/experiment_0/'
+# figure_save_path: 'reports/figures/experiment_0'
+# trajectory_save_path: 'data/processed/experiment_0'
 # ##---------------------------------------------------------------------##
 # ## Experiment 1
-# save_path:   'models/experiment_1/'
+# # paths
+# input_data_path: 'data/external/input/'
+# output_data_path: 'data/external/output/'
+# save_path: 'models/experiment_0/'
+# figure_save_path: 'reports/figures/experiment_1'
+# trajectory_save_path: 'data/processed/simulation'
+# ##---------------------------------------------------------------------##
+## Experiment
+# 2 Simulation results form Sadhan
+# paths
+data_path: 'data/processed/experiment/'
+save_path: 'models/experiment_0/'
+figure_save_path: 'reports/figures/experiment_1'
+trajectory_save_path: 'data/processed/simulation'

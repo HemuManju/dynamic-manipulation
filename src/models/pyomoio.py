@@ -3,7 +3,8 @@ import pyomo.core as pyomo
 import pyomo.environ as pyo
 import pyomo.dae as pyod
 
-# This module is not enitrely mine, I just added the last function. The original code base can be found at https://github.com/tum-ens/urbs.git
+# This module is not enitrely mine, I just added the last function.
+# The original code base can be found at https://github.com/tum-ens/urbs.git
 
 
 def get_entity(instance, name):

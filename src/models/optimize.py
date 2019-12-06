@@ -1,5 +1,4 @@
 import pyomo.environ as pyo
-import pyomo.dae as pyod
 from .pyomoio import get_profiles
 
 
@@ -24,10 +23,10 @@ def run_optimization(model, n_time_steps):
     m = model
     # Transform and solve
     pyo.TransformationFactory('dae.finite_difference').apply_to(
-        m, nfe=n_time_steps, wrt=m.time, scheme='FORWARD')
+        m, nfe=n_time_steps, wrt=m.time, scheme='BACKWARD')
     opt = pyo.SolverFactory('ipopt')
-    solution = opt.solve(m)
-    solution.write()
+    solution = opt.solve(m)  # set tee true for detailed resutls
+    # solution.write()
 
     # Get the dataframe of all the states and control
     optimal_values = get_profiles(m)

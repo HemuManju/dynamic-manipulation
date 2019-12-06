@@ -3,7 +3,8 @@ import pyomo.dae as pyod
 
 
 def motion_model(tf):
-    """Motion model for car maneuvering task from given intial conditions to final conditions.
+    """Motion model for car maneuvering task from given intial
+        conditions to final conditions.
 
     Parameters
     ----------
@@ -53,9 +54,9 @@ def motion_model(tf):
     m.ode_x = pyo.Constraint(
         m.time,
         rule=lambda m, time: m.dxdt[time] == m.u[time] * pyo.cos(m.t[time]))
-    m.ode_y = pyo.Constraint(m.time,
-                             rule=lambda molde, time: m.dydt[time] == m.u[time]
-                             * pyo.sin(m.t[time]))
+    m.ode_y = pyo.Constraint(
+        m.time,
+        rule=lambda m, time: m.dydt[time] == m.u[time] * pyo.sin(m.t[time]))
     m.ode_t = pyo.Constraint(m.time,
                              rule=lambda m, time: m.dtdt[time] == m.u[time] *
                              pyo.tan(m.p[time]) / L)

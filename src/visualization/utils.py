@@ -1,7 +1,5 @@
-from pathlib import Path
 import pickle
 import matplotlib.pyplot as plt
-import matplotlib
 
 
 def read_dataframe(path):
@@ -43,7 +41,7 @@ def read_model_log(read_path):
     return data
 
 
-def figure_asthetics(ax):
+def figure_asthetics(ax, subplot):
     """Change the asthetics of the given figure (operators in place).
 
     Parameters
@@ -51,24 +49,44 @@ def figure_asthetics(ax):
     ax : matplotlib ax object
 
     """
-    # matplotlib.rcParams['font.family'] = "Arial"
+
     ax.set_axisbelow(True)
     # Hide the top and right spines
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
+
     # Increase the ticks width
     ax.xaxis.set_tick_params(direction='out', width=1.5)
     ax.yaxis.set_tick_params(direction='out', width=1.5)
+
     # Increase the left and bottom spines width to match with ticks
     ax.spines['left'].set_linewidth(1.5)
     ax.spines['bottom'].set_linewidth(1.5)
+
     # Increase the x and y ticks
-    xtickslocs = ax.get_xticks().tolist()
-    ax.set_xticks(xtickslocs)
-    ytickslocs = ax.get_yticks().tolist()
-    ax.set_yticks(ytickslocs)
+    if not subplot:
+        xtickslocs = ax.get_xticks().tolist()
+        ax.set_xticks(xtickslocs)
+        ytickslocs = ax.get_yticks().tolist()
+        ax.set_yticks(ytickslocs)
+
     # Grid
     ax.grid(True)
+
+    return None
+
+
+def plot_settings():
+    """Change the asthetics of the given figure (operators in place).
+
+    Parameters
+    ----------
+    ax : matplotlib ax object
+
+    """
+
+    # plt.rcParams.update({'font.family'}: "Arial")
+    plt.rcParams.update({'font.size': 12})
 
     return None
 
@@ -129,3 +147,9 @@ def add_hatches(ax):
         thisbar.set_hatch(3 * hatches[i])
 
     return None
+
+
+def fix_microseconds(timestamp):
+    parts = timestamp.split(':')
+
+    return ':'.join(parts[:-1] + ['{:06d}'.format(int(parts[-1]))])
